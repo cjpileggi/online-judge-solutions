@@ -1,110 +1,110 @@
 /*
-  The 3n + 1 Problem
-
-  Programming Challenges (Skiena & Revilla): 1.6.1 The 3n + 1 problem
-
-	Online Judge: Problem 100 - The 3n + 1 problem
-  Judge Version: C++ 5.3.0 - GNU C++ Compiler
-	Best Runtime - 0.010s
-
-  - Uses unsigned int throughout program since input is always 0 or greater
+* UVa Online Judge: Problem 100 - The 3n + 1 Problem 
+*
+* Origin: Programming Challenges (Skiena & Revilla): 1.6.1 The 3n + 1 Problem
+*
+* Judge Version:
+* - C++ 5.3.0 - GNU C++ Compiler with options: -lm -lcrypt -O2 -pipe -DONLINE_JUDGE
+* - Best Run Time: 0.000 Seconds
+*
+* - C++11 5.3.0 - GNU C++ Compiler with options: -lm -lcrypt -O2 -std=c++11 -pipe -DONLINE_JUDGE
+* - Best Run Time: 0.000 Seconds
+*
 */
 
-#ifndef ONLINE_JUDGE
-    #define ONLINE_JUDGE false
-#endif
+#include <bits/stdc++.h>
+using namespace std;
 
-#include <unordered_map>
-#include <iostream>
+// Upper bound for caching cycle lengths
+constexpr unsigned int MAX = 1000000u;
 
-using std::unordered_map;
+// Cache to store already computed cycle lengths.
+// cache[n] = cycle length of n (only stored if n <= MAX)
+static vector<int> cache(MAX + 1, 0);
 
-// Find the cycle-length of integer n according to the algorithm provided in the problem
-unsigned int cycleLength(unsigned int n, unordered_map<int, int> &maxMem)
-{
-	// Loop to find the sequence of numbers starting with n and ending 1
-	// Increment cnt by 1 for each iteration in the loop. The final number is the cycle cycleLength
-	// Begin with 1 since 1 will always be the last integer in a sequence
-	unsigned int seq = n, cnt = 1;
-	while (seq != 1)
-	{
-		cnt++;
-		if (seq % 2 == 1) { seq = 3*seq + 1; }
-		else { seq /= 2; }
 
-		// If the cycle-length of current value seq was previously calculated and stored in maxMem,
-		// retrieve seq's cycle length in maxMem, add it to cnt and exit the while loop
-		if (maxMem.find(seq) != maxMem.end())
-		{
-			cnt = maxMem[seq] + (cnt - 1);
-			break;
-		}
-	}
-	maxMem[n] = cnt;
+/*
+ *  Compute the Collatz cycle length for integer n using:
+ *   - Memoization (cache)
+ *   - Iterative approach
+ *   - Bitwise calculations
+ */
+int cycle_length(unsigned int n) {
+    unsigned int original_n = n; // Save original input for caching
+    int length = 0;
 
-	return cnt;
+
+    while (n != 1) {
+
+        // If we've already computed this value, reuse it and break the loop
+        // This avoids recomputing large parts of the sequence  
+        if (n <= MAX && cache[n]) {
+            length += cache[n];
+            break;
+        }
+
+        if (n & 1u) {
+            // If n is Odd:
+            // Calculate n = 3*n + 1
+            // Then Immediately divide the result by 2 since the result is always even
+            // Final calulation: n = (3*n + 1)/2 (bitwise)
+            // Increase cycle length by 2
+            n = (3u * n + 1u) >> 1u;
+            length += 2;
+        } else {
+            // If n is Even:
+            // Calculate: n = n/2 (bitwise)
+            n >>= 1u;
+            length++;
+        }
+    }
+
+    // If we reached 1 directly (not via cache), count the final step
+    if (n == 1)
+        length++;
+
+    // Store result for reuse if less than the maximum 
+    if (original_n <= MAX)
+        cache[original_n] = length;
+
+    return length;
 }
 
-// Find the integer that exists between integers i and j with the greatest cycle-length
-unsigned int maxCycle(unsigned int i, unsigned int j, unordered_map<int, int> &maxMem)
-{
-	// The judge might pass a pair of integers where the first is greater than the second
-	// Swap the values if that is the case
-	// The algorithm will run incorrectly if the first integer is greater than the second
-	if (i > j)
-	{
-		unsigned int temp;
-		temp = i;
-		i = j;
-		j = temp;
-	}
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-	// Loop through all integers between i and j find the integer with the greatest cycle-length
-	// maxCnt - integer with the greatest cycle-length in the loop
-	// curCycle - cycle-length of integer evaluated in loop iteration
-	unsigned int maxCnt = 0, curCycle;
-	for (unsigned int n = i; n <= j; n++)
-	{
-		curCycle = 0;
-		// If integer n was already evaluated and the cycle-length was stored in maxMem, use that value
-		// Otherwise, calculate the cycle-lenth of n
-		if (maxMem.find(n) != maxMem.end())
-		{
-			curCycle = maxMem[n];
-		}
-		else
-		{
-			curCycle = cycleLength(n, maxMem);
-		}
-		// Assign to maxCnt the greatest cycle-length in the for-loop
-		if (curCycle >  maxCnt)
-		{
-			maxCnt = curCycle;
-		}
-	}
-	return maxCnt;
-}
+    // Local Test vs. Judge toggle
+    #ifndef ONLINE_JUDGE
+        if (freopen("p100.txt", "r", stdin) == nullptr) {
+            cerr << "Error: could not open file\n";
+            return 1;
+        }
+    #endif
 
-int main()
-{
-	unsigned int i, j; // Two input integers
-	// Unordered map used to store previously determined cycles
-	// <integer, cycle length of integer>
-	unordered_map<int, int> maxMem;
+    int i, j;
 
-	// Read inputs from Online Judge
-	while(scanf("%d %d", &i, &j) != EOF )
-	{
-		printf("%d %d %d\n", i, j, maxCycle(i, j, maxMem));
-	}
+    // Store base case: cycle length of 1 is 1
+    cache[1] = 1;
 
-	// Read inputs from file used for testing
-	/*
-	FILE *in = fopen("./p100.txt", "r");
-	while(fscanf(in, "%d %d", &i, &j) != EOF )
-	{
-		printf("%d %d %d\n", i, j, maxCycle(i, j, maxMem));
-	}
-	*/
-  return 0;
+    // Maintain numerical order of values (judge examples are sometimes not in numerical order)
+    while (cin >> i >> j) {
+        int start = i, end = j;
+        if (start > end) swap(start, end);
+
+        // Remember the largest cycle within the current range
+        int max_cycle_len = 0;
+
+        // Compute cycle lengths for all numbers in range [i, j]
+        // Store the highest
+        for (int k = start; k <= end; ++k) {
+            int len = cycle_length(static_cast<unsigned int>(k));
+            if (len > max_cycle_len) max_cycle_len = len;
+        }
+
+        // Output format to match judge's desired output (original input order)
+        cout << i << ' ' << j << ' ' << max_cycle_len << '\n';
+    }
+
+    return 0;
 }

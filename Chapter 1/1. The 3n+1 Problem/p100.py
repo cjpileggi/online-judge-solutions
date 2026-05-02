@@ -1,105 +1,112 @@
 """
-The 3n + 1 Problem
+UVa Online Judge: Problem 100 - The 3n + 1 Problem
 
-Programming Challenges (Skiena & Revilla): 1.6.1 The 3n + 1 Problem
+Origin: Programming Challenges (Skiena & Revilla): 1.6.1 The 3n + 1 Problem
 
-Online Judge: Problem 100 - The 3n + 1 Problem
 Judge Version: PYTH3 3.5.1 - Python 3
-Best Run Time: 1.360 Seconds
+Best Run Time: 0.370 Seconds
 
 """
 
+
 import sys
-#import functools
 
-#Caching can substitute the maxMem dictionary for improving performance
-#@functools.lru_cache(None)
-def cycleLength(n, maxMem):
+# Local Test vs. Judge toggle
+# Set False when submitting to judge
+# Set True when testing locally
+if sys.stdin.isatty():
+    sys.stdin = open("p100.txt", "r")
+
+
+# Upper bound for caching cycle lengths
+MAX = 1_000_000
+
+# Cache to store already computed cycle lengths.
+# cache[n] = cycle length of n (only stored if n <= MAX)
+cache = [0] * (MAX + 1)
+cache[1] = 1  # Store base case: cycle length of 1 is 1
+
+
+def cycle_length(n: int) -> int:
     """
-        Calculates the cycle-legnth of a number
+    Compute the Collatz cycle length for integer n using:
+    - Memoization (cache)
+    - Iterative approach
+    - Bitwise calculations
 
-        Parameters
-        ----------
-        n : int
-            integer to calculate cycle-length for
-        maxMem : dict
-            Maximum Cycle-Length cache passed by reference
+    Args:
+        n (int): the number for which we want to determine the cycle length
 
-        Returns
-        -------
-        int
-            the cycle-length of the given interval
-
+    Returns:
+        int: cycle length of n
     """
-    # Used the stored value in the cache if the was previously calculated
-    if n in maxMem:
-        return maxMem[n]
-    else:
-        seq = n
-        cnt = 1
 
-        while seq != 1:
-            cnt += 1
-            if seq % 2 ==1:
-                seq = 3*seq + 1
-            else:
-                seq = seq // 2
-        maxMem[n] = cnt
-        return cnt
+    original_n = n  # Save original input for caching
+    length = 0
 
-#@functools.lru_cache(None)
-def maxCycle(i, j, maxMem):
-    """
-        Calculates the maximum cycle between the given range
+    while n != 1:
+        
+        # If we've already computed this value, reuse it and break the loop
+        # This avoids recomputing large parts of the sequence
+        if n <= MAX and cache[n] != 0:
+            length += cache[n]
+            break
 
-        Calls the cycleLength function for each number
-
-        Parameters
-        ----------
-        i : int
-            First number in range
-        j : int
-            Second number in range
-        maxMem : dict
-            Maximum Cycle-Length cache passed by reference
-
-        Returns
-        -------
-        int
-            maximum cycle in the range
-
-    """
-    # The judge may provide a set of numbers that are not in ascending order
-    # The lowest integer must always be first for the algorithm to work
-    i, j, curCycle, maxCnt = min(i, j), max(i, j), 0, 0
-
-    return max(cycleLength(n, maxMem) for n in range(i, j+1))
-
-    # for-loop replaced with inline statement above
-    """for n in range(i, j+1):
-        curCycle = 0
-
-        if n in maxMem:
-            curCycle = maxMem[n]
+        if n & 1:
+            # If n is Odd: 
+            # Calculate n = 3*n + 1 
+            # Then Immediately divide the result by 2 since the result is always even
+            # Final result: n = (3*n + 1)/2 (bitwise)
+            # Increase cycle length by 2
+            n = (3 * n + 1) >> 1
+            length += 2
         else:
-            curCycle = cycleLength(n, maxMem)
+            # If n is Even:
+            # Calculate: n = n/2 (bitwise) 
+            n >>= 1
+            length += 1
+        
+    # If we reached 1 directly (not via cache), count the final step
+    if n == 1:
+        length += 1
 
-        maxCnt = max(maxCnt, curCycle)
-    return maxCnt"""
+    # Store result for reuse if less than the maximum 
+    if original_n <= MAX:
+        cache[original_n] = length
 
-if __name__ == '__main__':
-    # Dictionary used to cache results of previously calculated cycle lengths
-    # Key: integer n
-    # Value: cycle-length for integer n
-    i, j, maxMem = 0, 0, {}
+    return length
+
+
+def main():
+    """
+    Main execution loop.
+    """
+
+    # Evaluate each line in local or judge's test file
     for line in sys.stdin:
-        #Split input line into two integers: the beginning and end of the range
-        i, j = map(int, line.split()[:2])
-        print(i, j, maxCycle(i, j, maxMem))
+        # Skip empty lines
+        if not line.strip():
+            continue
 
-    # Read inputs from file used for testing
-    """f = open("p100.txt", "r")
-    for line in f:
-        i, j = map(int, line.split()[:2])
-        print(i, j, maxCycle(i, j, maxMem))"""
-    exit(0)
+        # Read values
+        i, j = map(int, line.split())
+
+        # Maintain numerical order of values (judge examples are sometimes not in numerical order)
+        start, end = min(i, j), max(i, j)
+
+        # Remember the largest cycle within the current range
+        max_cycle_len = 0
+
+        # Compute cycle lengths for all numbers in range [i, j]
+        # Store the highest
+        for n in range(start, end + 1):
+            c = cycle_length(n)
+            if c > max_cycle_len:
+                max_cycle_len = c
+
+        # Output format to match judge's desired output (original input order)
+        sys.stdout.write(f"{i} {j} {max_cycle_len}\n")
+
+
+if __name__ == "__main__":
+    main()
