@@ -9,9 +9,7 @@ Best Run Time: 0.370 Seconds
 
 import sys
 
-# Local Test vs. Judge toggle
-# Set False when submitting to judge
-# Set True when testing locally
+# If test file is present, use local testing
 if sys.stdin.isatty():
     sys.stdin = open("p100.txt", "r")
 
