@@ -1,7 +1,5 @@
 """
-UVa Online Judge: Problem 100 - The 3n + 1 Problem
-
-Origin: Programming Challenges (Skiena & Revilla): 1.6.1 The 3n + 1 Problem
+Online Judge: Problem 100 - The 3n + 1 Problem
 
 Judge Version: PYTH3 3.5.1 - Python 3
 Best Run Time: 0.370 Seconds

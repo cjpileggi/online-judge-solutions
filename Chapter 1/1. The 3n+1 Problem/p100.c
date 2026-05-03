@@ -1,7 +1,5 @@
 /*
-* UVa Online Judge: Problem 100 - The 3n + 1 Problem 
-*
-* Origin: Programming Challenges (Skiena & Revilla): 1.6.1 The 3n + 1 Problem
+* Online Judge: Problem 100 - The 3n + 1 Problem 
 *
 * Judge Version: ANSI C 5.3.0 - GNU C Compiler with options: -lm -lcrypt -O2 -pipe -ansi -DONLINE_JUDGE
 * Best Run Time: 0.000 Seconds
