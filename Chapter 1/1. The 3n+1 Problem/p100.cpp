@@ -72,7 +72,7 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    // Local Test vs. Judge toggle
+    // If the program is not compiled by the judge, run locally using a test file
     #ifndef ONLINE_JUDGE
         if (freopen("p100.txt", "r", stdin) == nullptr) {
             cerr << "Error: could not open file\n";

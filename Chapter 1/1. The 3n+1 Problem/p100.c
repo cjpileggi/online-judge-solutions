@@ -65,7 +65,7 @@ int cycle_length(unsigned int n) {
 int main() {
 
 
-    /* Local Test vs. Judge toggle */
+    /* If the program is not compiled by the judge, run locally using a test file */
     #ifndef ONLINE_JUDGE
         if (freopen("p100.txt", "r", stdin) == NULL) {
             fprintf(stderr, "Error: could not open file\n");
