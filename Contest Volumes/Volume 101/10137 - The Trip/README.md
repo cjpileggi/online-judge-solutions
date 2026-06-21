@@ -158,5 +158,5 @@ __O(n)__ - The individual expenses are stored in a list/array.
 ## Best Judge Run Times
 * C Solution: 0.000 seconds
 * C++ Solution: 0.000 seconds
-* Java Solution: 0.040 seconds
+* Java Solution: 0.070 seconds
 * Python Solution: 0.010 seconds
