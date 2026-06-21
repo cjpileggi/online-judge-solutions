@@ -11,7 +11,7 @@ import sys
 # For local testing with a text file including sample input
 # Uncomment to use local testing
 #if sys.stdin.isatty():
-#    sys.stdin = open("pc163_inputs.txt", "r")
+#    sys.stdin = open("p10137.txt", "r")
 
 
 # Process student groups until a group count of "0" is provided
