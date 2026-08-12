@@ -11,7 +11,7 @@ import sys
 # For local testing with a text file including sample input
 # Uncomment to use local testing
 #if sys.stdin.isatty():
-#    sys.stdin = open("pc164_inputs.txt", "r")
+#    sys.stdin = open("p706.txt", "r")
 
 
 # Seven-segment representation for digits 0-9.
